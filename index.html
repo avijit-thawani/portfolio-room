@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Avijit Thawani — PhD, builder, filmmaker</title>
+<meta name="description" content="Avijit Thawani (Avi) — PhD from USC in language modelling and tokenization, founding LLM engineer at PineGap.ai, filmmaker and writer.">
+<link rel="stylesheet" href="assets/styles.css">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#1a1714">
+
+<!-- The import map MUST precede every modulepreload below it. Chrome only
+     honours a map that appears before the first module resolution, so with the
+     order reversed the preloads resolve bare specifiers against the map that
+     doesn't exist yet, and every one of them 404s. -->
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/three.module.js" } }
+</script>
+
+<link rel="preload" as="image" href="assets/benaras.webp" fetchpriority="high">
+<link rel="preload" as="image" href="assets/benaras-depth.webp">
+<link rel="modulepreload" href="./vendor/three/three.module.js">
+<link rel="modulepreload" href="./src/main.js">
+<link rel="modulepreload" href="./src/parallax.js">
+<link rel="modulepreload" href="./src/particles.js">
+<link rel="modulepreload" href="./src/pan.js">
+</head>
+
+<body>
+<div id="app"></div>
+<div id="hotspots"></div>
+<div id="tooltip"></div>
+<button id="contact-link" type="button">Contact</button>
+<a id="credit" href="https://lucasmartinic.com/" target="_blank" rel="noopener noreferrer">
+  Inspired by lucasmartinic.com</a>
+
+<div id="backdrop"></div>
+<aside id="panel" class="right" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+  <button id="panel-close" type="button" aria-label="Close">&#10005;</button>
+  <p id="panel-tag"></p>
+  <h2 id="panel-title"></h2>
+  <div id="panel-body"></div>
+</aside>
+
+<div id="loading">Setting up the room&hellip;</div>
+
+<!-- Crawlable copy of every section. A canvas is invisible to search engines, so
+     the prose has to exist as real markup somewhere. tools/gen-seo.mjs will
+     generate this block from src/content.js; hand-edits here get overwritten. -->
+<main class="crawl" aria-hidden="true">
+  <h1>Avijit Thawani</h1>
+  <p>Run tools/gen-seo.mjs to fill this from src/content.js.</p>
+</main>
+
+<noscript>
+  <div class="fallback"><div class="fallback-inner">
+    <h1>Avijit Thawani</h1>
+    <p class="muted">This site&rsquo;s room needs JavaScript. The written version is below.</p>
+  </div></div>
+</noscript>
+
+<script type="module" src="./src/main.js"></script>
+
+<!-- Boot watchdog. If the module graph fails to resolve - a bad import map, a
+     404 on a preload, a syntax error in a browser that doesn't support something
+     we used - no error surfaces and the visitor stares at the loading screen
+     forever. main.js sets __roomStarted the instant it runs, so if that flag is
+     still unset after a beat we know boot failed and can show the text version. -->
+<script>
+(function () {
+  var swapped = false;
+  function check() {
+    if (swapped || window.__roomStarted) return;
+    swapped = true;
+    document.getElementById('loading').textContent =
+      'Could not start the room. Loading the written version\u2026';
+    import('./src/ui.js')
+      .then(function (m) { m.showFallback('startup failed'); })
+      .catch(function () { document.querySelector('.crawl').className = 'fallback-inner'; });
+  }
+  setTimeout(check, 6000);
+})();
+</script>
+</body>
+</html>

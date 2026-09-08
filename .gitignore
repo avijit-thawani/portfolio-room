@@ -1,0 +1,30 @@
+# Local Python environments and caches
+.venv/
+.venv3d/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Built output. Netlify runs `python3 tools/build.py` to produce it.
+dist/
+
+# Netlify CLI link state - carries the site id.
+.netlify/
+
+# tools/serve.py bookkeeping
+.serve.pid
+.serve.log
+
+# Full-resolution source art and its depth PNGs: ~30 MB that no browser ever
+# requests. The served WebPs in assets/ are committed; regenerate the sources
+# from the prompts in tools/ and run them back through depth.py + encode.py.
+art-src/
+*.blend
+*.blend1
+
+# Work in progress: real geometry with movable lights instead of a displaced
+# plane. Not part of the published site and not ready to read.
+3d/
+
+# Private working notes - the map this repo is maintained from.
+NOTES.md

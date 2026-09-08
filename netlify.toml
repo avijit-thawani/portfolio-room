@@ -1,0 +1,35 @@
+# `dist` is assembled by tools/build.py, not by a bundler - see that file for
+# why the repo root is not publishable as-is.
+[build]
+  publish = "dist"
+  command = "python3 tools/build.py"
+
+[dev]
+  # netlify serve opens the system browser on start. Off.
+  autoLaunch = false
+
+# The switcher used to live at /compare.html and is now the homepage. Query
+# strings are carried through, so an old ?scene= link still lands on its scene.
+[[redirects]]
+  from = "/compare.html"
+  to = "/"
+  status = 301
+  force = true
+
+# The two textures are the whole payload and they are content-addressed by name:
+# a new scene is a new filename, never a new body at the same URL. So they can
+# be cached hard, and the HTML that points at them cannot be.
+[[headers]]
+  for = "/assets/*.webp"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/vendor/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

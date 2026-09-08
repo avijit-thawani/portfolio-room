@@ -1,0 +1,10 @@
+# Build-time tooling only. Nothing here is needed to serve or view the site -
+# these generate the depth map and compress the artwork, offline.
+pillow==12.3.0
+numpy==2.5.2
+
+# Monocular depth estimation (tools/depth.py). Large. Skip these and the tool
+# falls back to a crude synthetic gradient, which is enough to feel the parallax
+# but not good enough to ship.
+torch==2.13.0
+transformers==5.15.1

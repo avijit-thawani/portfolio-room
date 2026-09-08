@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<!-- This page is published as the site homepage (tools/build.py), so the title
+     and description are the real ones, not "scene compare". It keeps its own
+     filename in the repo because the harness is what it still is. -->
+<title>Avijit Thawani — PhD, builder, filmmaker</title>
+<meta name="description" content="Avijit Thawani (Avi) — PhD from USC in language modelling and tokenization, founding LLM engineer at PineGap.ai, filmmaker and writer.">
+<link rel="stylesheet" href="assets/styles.css">
+
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta name="theme-color" content="#1a1714">
+
+<!-- Same ordering rule as index.html: the import map must precede every
+     modulepreload, or the preloads resolve bare specifiers against a map that
+     does not exist yet and all 404. -->
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/three.module.js" } }
+</script>
+<link rel="modulepreload" href="./vendor/three/three.module.js">
+<link rel="modulepreload" href="./src/parallax.js">
+<link rel="modulepreload" href="./src/particles.js">
+<link rel="modulepreload" href="./src/pan.js">
+
+<style>
+  /* Chrome specific to the harness. Everything else - hotspots, drawer,
+     tooltip, edit handles - is the real stylesheet, so what you judge here is
+     what the site actually does. */
+  .bar {
+    position: fixed; z-index: 60; left: 50%; transform: translateX(-50%);
+    bottom: 16px; display: flex; gap: 6px; align-items: center;
+    padding: 6px; border-radius: 12px;
+    background: rgb(20 18 16 / 88%); border: 1px solid rgb(255 255 255 / 12%);
+    backdrop-filter: blur(12px);
+  }
+  .bar a, .bar button {
+    font: inherit; font-size: 13px; color: #c9c1b6; text-decoration: none;
+    padding: 7px 12px; border-radius: 8px; border: 1px solid transparent;
+    background: transparent; cursor: pointer; white-space: nowrap;
+  }
+  .bar a:hover, .bar button:hover { background: rgb(255 255 255 / 8%); color: #fff; }
+  .bar a.on { background: #efe7db; color: #17140f; font-weight: 600; }
+  .bar .sep { width: 1px; align-self: stretch; background: rgb(255 255 255 / 14%); margin: 2px 4px; }
+  .bar button.on { border-color: #c98a3c; color: #e0a860; }
+
+  .hud {
+    position: fixed; z-index: 60; top: 14px; left: 14px;
+    padding: 10px 14px; border-radius: 10px; max-width: 330px;
+    background: rgb(20 18 16 / 82%); border: 1px solid rgb(255 255 255 / 10%);
+    backdrop-filter: blur(12px);
+  }
+  .hud h1 { margin: 0 0 2px; font-size: 15px; font-weight: 600; }
+  .hud p { margin: 0; font-size: 12px; color: #9a9186; }
+  .hud code { font: 11px ui-monospace, monospace; color: #b99a6b; }
+  .hud kbd {
+    font: 11px ui-monospace, monospace; background: rgb(255 255 255 / 10%);
+    border: 1px solid rgb(255 255 255 / 16%); border-radius: 4px; padding: 1px 5px;
+  }
+  /* Outline every target, so a glance answers "would anyone find these?" */
+  body.show-spots .hotspot { outline: 1px dashed rgb(255 255 255 / 45%); outline-offset: -1px; }
+  body.show-spots .hotspot::before {
+    content: attr(data-label); position: absolute; left: 0; top: -17px;
+    font: 10px ui-monospace, monospace; color: #f0e6d6;
+    background: rgb(20 18 16 / 85%); padding: 1px 5px; border-radius: 3px;
+    white-space: nowrap; pointer-events: none;
+  }
+</style>
+</head>
+
+<body>
+<div id="app"></div>
+<div id="hotspots"></div>
+<div id="tooltip"></div>
+
+<div id="backdrop"></div>
+<aside id="panel" class="right" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="panel-title">
+  <button id="panel-close" type="button" aria-label="Close">&#10005;</button>
+  <p id="panel-tag"></p>
+  <h2 id="panel-title"></h2>
+  <div id="panel-body"></div>
+</aside>
+
+<div id="loading">Setting up the room&hellip;</div>
+
+<div class="hud" id="hud" hidden>
+  <h1 id="title"></h1>
+  <p id="meta"></p>
+  <p id="depthargs" style="margin-top:4px"></p>
+  <p style="margin-top:6px">
+    Click an object &middot; <kbd>d</kbd> depth &middot; <kbd>h</kbd> outlines &middot;
+    <kbd>&larr;</kbd><kbd>&rarr;</kbd> pan
+  </p>
+</div>
+
+<div class="bar" id="bar"></div>
+<a id="credit" href="https://lucasmartinic.com/" target="_blank" rel="noopener noreferrer">
+  Inspired by lucasmartinic.com</a>
+
+<script type="module">
+import { createParallax } from './src/parallax.js';
+import { addParticles } from './src/particles.js';
+import { mountPan } from './src/pan.js';
+import { createUI, showFallback } from './src/ui.js';
+import { SECTIONS } from './src/content.js';
+import { SCENES, DEPLOYED, sceneById } from './src/scenes.js';
+import { mountEditor } from './src/editor.js';
+
+const params = new URLSearchParams(location.search);
+const EDIT = params.has('edit');
+const active = sceneById(params.get('scene'));
+const isPhone = () => matchMedia('(max-width: 620px)').matches;
+
+// The harness has two audiences. Calibrating a scene needs the depth toggle, the
+// dashed outlines and the depth.py arguments on screen; someone handed the link
+// needs a picture they can click. `?dev` (implied by `?edit`) is the calibration
+// view, and the bare URL is what gets deployed - so the public build is the same
+// file rather than a stripped copy that drifts out of sync with this one.
+const DEV = EDIT || params.has('dev');
+const shown = DEV ? SCENES : DEPLOYED;
+
+// Scene switching is a page load rather than an in-place swap. createParallax
+// owns a WebGL context and a resize listener with no teardown path, so
+// reloading is both simpler and honest: every switch re-tests a cold boot.
+const bar = document.getElementById('bar');
+const suffix = EDIT ? '&edit' : DEV ? '&dev' : '';
+for (const s of shown) {
+  const a = document.createElement('a');
+  a.href = `?scene=${s.id}${suffix}`;
+  a.textContent = s.label;
+  if (s.id === active.id) a.className = 'on';
+  bar.appendChild(a);
+}
+const depthBtn = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Depth' });
+const spotBtn = Object.assign(document.createElement('button'), { type: 'button', textContent: 'Outlines' });
+if (DEV) {
+  bar.insertAdjacentHTML('beforeend', '<span class="sep"></span>');
+  bar.append(depthBtn, spotBtn);
+  document.getElementById('hud').hidden = false;
+  document.getElementById('title').textContent = active.title;
+  document.getElementById('meta').textContent = active.note;
+  document.getElementById('depthargs').innerHTML =
+    `depth.py <code>${active.depthArgs}</code> &middot; ${active.hotspots.length} sections`;
+}
+
+const px = createParallax(document.getElementById('app'), {
+  colorURL: `assets/${active.id}.webp`,
+  depthURL: `assets/${active.id}-depth.webp`,
+  strength: 0.018,
+});
+if (!px.ok) { showFallback('WebGL unavailable'); throw px.error; }
+// This page is the public homepage, not just a harness, so it owes the same
+// courtesy index.html does: the particle layer is the only thing that moves
+// unprompted, which is exactly what prefers-reduced-motion is asking about.
+if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  addParticles(px, active.particles);
+}
+
+const ui = createUI({ onClose: () => px.zoomOut() });
+const layer = document.getElementById('hotspots');
+
+// Labels come from content.js rather than being restated per scene, so the
+// four tables stay a pure geometry statement and cannot drift out of sync.
+const spots = active.hotspots.map((h) => {
+  const spot = { ...h, label: h.label ?? SECTIONS[h.section]?.title ?? h.section };
+  const el = document.createElement('button');
+  el.className = 'hotspot';
+  el.type = 'button';
+  el.dataset.section = spot.section;
+  el.dataset.label = spot.label;
+  el.setAttribute('aria-label', spot.label);
+
+  el.addEventListener('click', (e) => {
+    if (EDIT) return;
+    ui.tooltip(null);
+    px.zoomTo(spot.x + spot.w / 2, spot.y + spot.h / 2);
+    const side = isPhone()
+      ? (e.clientY < innerHeight / 2 ? 'bottom' : 'top')
+      : (e.clientX > innerWidth / 2 ? 'left' : 'right');
+    ui.open(spot.section, side);
+  });
+
+  const hover = (e) => { if (!EDIT && !ui.isOpen()) ui.tooltip(spot.label, e.clientX, e.clientY); };
+  el.addEventListener('pointerenter', hover);
+  el.addEventListener('pointermove', hover);
+  el.addEventListener('pointerleave', () => ui.tooltip(null));
+
+  layer.appendChild(el);
+  return { h: spot, el };
+});
+
+function layoutHotspots() {
+  const r = px.coverRect();
+  for (const { h, el } of spots) {
+    el.style.left = `${r.x + h.x * r.w}px`;
+    el.style.top = `${r.y + h.y * r.h}px`;
+    el.style.width = `${h.w * r.w}px`;
+    el.style.height = `${h.h * r.h}px`;
+  }
+}
+
+function projectHotspots() {
+  for (const { h, el } of spots) {
+    const r = px.projectImageRect(h);
+    if (![r.x, r.y, r.w, r.h].every(Number.isFinite)) continue;
+    el.style.left = `${r.x}px`;
+    el.style.top = `${r.y}px`;
+    el.style.width = `${r.w}px`;
+    el.style.height = `${r.h}px`;
+  }
+}
+addEventListener('resize', layoutHotspots);
+layoutHotspots();
+
+// Showing the depth map means pointing the color sampler at the depth texture.
+// The parallax keeps running underneath, which is the point: you want to see
+// whether the silhouettes that move line up with the objects that should move.
+let depthOn = false, colorTex = null;
+function toggleDepth(on) {
+  depthOn = on ?? !depthOn;
+  if (depthOn) {
+    colorTex = colorTex ?? px.uniforms.uColor.value;
+    px.uniforms.uColor.value = px.uniforms.uDepth.value;
+  } else if (colorTex) {
+    px.uniforms.uColor.value = colorTex;
+  }
+  depthBtn.classList.toggle('on', depthOn);
+}
+function toggleSpots(on) {
+  const next = on ?? !document.body.classList.contains('show-spots');
+  document.body.classList.toggle('show-spots', next);
+  spotBtn.classList.toggle('on', next);
+}
+depthBtn.addEventListener('click', () => toggleDepth());
+spotBtn.addEventListener('click', () => toggleSpots());
+toggleSpots(DEV);
+
+addEventListener('pointermove', (e) => {
+  px.setPointer((e.clientX / innerWidth) * 2 - 1, -((e.clientY / innerHeight) * 2 - 1));
+});
+
+addEventListener('keydown', (e) => {
+  if (DEV && e.key === 'd') toggleDepth();
+  if (DEV && e.key === 'h') toggleSpots();
+  const step = px.worldPerPx() * innerWidth * 0.35;
+  if (e.key === 'ArrowLeft') px.setPan(px.getPan() - step);
+  if (e.key === 'ArrowRight') px.setPan(px.getPan() + step);
+});
+
+// Arrow keys alone are a desktop affordance. This page is the published
+// homepage, so it needs the touch drag and the edge arrows too - without them a
+// portrait phone shows about a third of the image and cannot reach the rest.
+const { update: updatePan } = mountPan(px, () => EDIT || ui.isOpen());
+
+if (EDIT) mountEditor({ spots, px, layoutHotspots, hotspots: spots.map((s) => s.h) });
+
+let t0 = null;
+function tick(now) {
+  requestAnimationFrame(tick);
+  if (t0 === null) t0 = now;
+  px.render((now - t0) / 1000);
+  projectHotspots();
+  updatePan();
+}
+requestAnimationFrame(tick);
+
+px.onReady(() => { layoutHotspots(); ui.loadingDone(); });
+
+// Handle for the console, and for driving frames by hand: requestAnimationFrame
+// does not fire in a non-composited browser, so screenshots go stale there
+// unless something calls render directly.
+window.__compare = { px, ui, spots, layoutHotspots, toggleDepth, toggleSpots, active };
+</script>
+</body>
+</html>
