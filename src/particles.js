@@ -309,7 +309,6 @@ export function addParticles(px, spec) {
   geo.setAttribute('aSpeed', new THREE.BufferAttribute(speed, 1));
   geo.setAttribute('aDepth', new THREE.BufferAttribute(depth, 1));
 
-  const u = px.uniforms;
   const mat = new THREE.ShaderMaterial({
     // Aliased on purpose: these are the *same* uniform objects the mesh uses,
     // so the layer cannot drift out of step with the image it sits on.

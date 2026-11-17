@@ -18,10 +18,97 @@ export const HERO = {
   tagline: 'Tinkerer, researcher, storyteller.',
 };
 
+// Projects are data rather than hand-written markup, so every one gets the same
+// card: a cover, a name, one or two sentences, and where to go. `img` is a file
+// in assets/thumbs/; a project with none gets a lettered placeholder so the grid
+// stays even. `fit: 'contain'` is for logos and odd-shaped art that must not be
+// cropped, and `dark` keeps a dark cover for art drawn in light ink. `links` is [label, url] pairs, and the first one is also where the
+// cover points.
+const GH = 'https://github.com/avijit-thawani/';
+
+const RECENT = [
+  { name: 'Pahunchi', img: 'cover-pahunchi.webp',
+    text: 'A pretend phone call that talks back: an AI dad, mom or friend in an Indian voice, for walking home or cab rides at night.',
+    links: [['Live', 'https://phoney-call.netlify.app'], ['Code', GH + 'pahunchi']] },
+  { name: 'Sense', img: 'cover-sense.webp',
+    text: 'A thumb-sized camera that describes the world to a blind person through earphones. Tap for what is in front of you, or hold and ask.',
+    links: [['Code', GH + 'sense']] },
+  { name: 'Living Survey', img: 'cover-living-survey.webp',
+    text: 'A literature survey that lives in your README and updates itself. No hosting, no API keys.',
+    links: [['Code', GH + 'living-survey'], ['Example', GH + 'compositional-generalization-lit-review']] },
+  { name: 'Sikander', img: 'cover-sikander.webp',
+    text: 'A turn-based battle game set in 326 BC, played in the browser. Plain HTML, CSS and JavaScript with no build step.',
+    links: [['Code', GH + 'sikander']] },
+  { name: 'Read Party', img: 'cover-read-party.webp',
+    text: 'Read the same book together, in sync, from different devices. A fork of Koodo Reader.',
+    links: [['Live', 'https://readparty-app.netlify.app/'], ['Code', GH + 'read-party']] },
+  { name: 'Saras Mandarin', img: 'cover-saras-mandarin.webp',
+    text: 'Learn Mandarin with HSK1, LLMs and spaced repetition.',
+    links: [['Live', 'https://saras-mandarin.netlify.app/'], ['Code', GH + 'mandarin']] },
+  { name: 'Sketch to image', img: 'cover-ipad.webp',
+    text: 'Draw the composition on an iPad with an Apple Pencil, pick a style, and the model renders the part a prompt cannot express.',
+    links: [['Code', GH + 'ipad']] },
+  { name: 'Typst agent harness', img: 'cover-typst.webp',
+    text: 'Agentic LaTeX to Typst conversion, with compile and visual-fidelity feedback loops.',
+    links: [['Code', GH + 'typst-agent-harness']] },
+  { name: 'TESS planet candidates', img: 'cover-tess.webp',
+    text: 'Two new planet-candidate signals from a 1,098-star search at 60 to 100 pc, preregistered on Zenodo. With Niyati.',
+    links: [['Code', GH + 'tess-niyati-avijit']] },
+  { name: 'Chess trainer',
+    text: 'An opening trainer in the browser, with Stockfish running locally as WebAssembly.',
+    links: [['Code', GH + 'chess-trainer']] },
+  { name: 'Avi Trivia',
+    text: 'A trivia card game.',
+    links: [['Live', 'https://avi-trivia.netlify.app/'], ['Code', GH + 'trivia']] },
+  { name: 'This room', img: 'cover-room.webp',
+    text: 'The site you\u2019re on, built from one flat illustration plus a depth map, displaced in a shader.',
+    links: [['Code', GH + 'portfolio-room']] },
+];
+
+const EARLIER = [
+  { name: 'PineGap.ai', img: 'pinegap.svg', fit: 'contain', dark: true,
+    text: 'A VC-backed startup disrupting equity research with LLMs. As founding MLE/LLM engineer I finetune models, build RAG pipelines, custom evals and LangChains, and ship them to production.',
+    links: [['Site', 'https://www.pinegap.ai/']] },
+  { name: 'Saras', img: 'saras.webp', fit: 'contain',
+    text: 'A personal AI tutor as a Telegram bot. Won a $1,500 grant at the New Venture Seed Contest and placed third at USC Trojan Tank.',
+    links: [['Bot', 'https://t.me/saras_gpt_bot']] },
+  { name: 'Ballpark', img: 'ballpark.webp', fit: 'contain',
+    text: 'Wordle for numbers, a game that quietly improves your numeracy. Built with Harsh.',
+    links: [['Play', 'https://ball-park.netlify.app']] },
+  { name: 'Living Surveys (v1)', img: 'survey.webp',
+    text: 'The first version: an open-source lit-review tool so you can stop having FOMO about academia, on GitHub Actions, Semantic Scholar and Netlify. Built with Eshaan.',
+    links: [['Code', 'https://github.com/EshaanAgg/Research-Literature-Manager'], ['Talk', 'https://youtu.be/FUIq9-lJ9ag']] },
+  { name: 'DesignAR', img: 'designar.webp',
+    text: 'Our augmented reality app. National finalist and worldwide #6 at Microsoft Imagine Cup 2016, plus the Samsung VR Appathon. The startup drew several VC offers.',
+    links: [] },
+  { name: '2020 Election guide', img: 'election.webp',
+    text: 'A data story built with journalists from the USC Annenberg Media Interactive Desk.',
+    links: [['View', 'https://annenberginteractives.com/2020-2021/voting-information-by-state/']] },
+  { name: 'COVID-19 India', img: 'covid.webp',
+    text: 'Built between arranging oxygen for dying relatives, recovering myself, and chasing a submission deadline: an attempt to visualize the scale of the Indian crisis so Americans could comprehend it.',
+    links: [['View', 'https://avi-jit.github.io/covid-india/scatter#']] },
+];
+
+function card(p) {
+  const href = p.links[0]?.[1];
+  const art = p.img
+    ? `<img${p.fit === 'contain' ? ' class="fit"' : ''} src="assets/thumbs/${p.img}" alt="" loading="lazy">`
+    : `<span class="blank" aria-hidden="true">${p.name}</span>`;
+  const cls = p.dark ? 'cover dark' : 'cover';
+  const cover = href
+    ? `<a class="${cls}" href="${href}" tabindex="-1" aria-hidden="true">${art}</a>`
+    : `<span class="${cls}">${art}</span>`;
+  const links = p.links.map(([label, url]) => `<a href="${url}">${label}</a>`).join('');
+  return `<article class="card">${cover}
+    <div class="card-body"><h4>${p.name}</h4><p>${p.text}</p>
+    ${links ? `<div class="links">${links}</div>` : ''}</div></article>`;
+}
+
 export const SECTIONS = {
   about: {
     object: 'framed portrait on the wall',
     zone: 'researcher',
+    chip: 'About',
     title: 'About me',
     tagline: 'Tinkerer, researcher, storyteller',
     body: `
@@ -43,6 +130,7 @@ export const SECTIONS = {
   research: {
     object: 'whiteboard or pinned paper stack (tokenization scribbles)',
     zone: 'researcher',
+    chip: 'Research',
     title: 'Research',
     tagline: 'Tokenization & numeracy',
     body: `
@@ -87,66 +175,17 @@ export const SECTIONS = {
   build: {
     object: 'the computer monitor (deep zoom - the signature moment)',
     zone: 'tinkerer',
-    title: 'Things I build',
-    tagline: 'Products, startups & hacks',
+    chip: 'Projects',
+    title: 'Projects',
+    tagline: 'Open source, products & hacks',
     body: `
-      <p>Alongside the PhD I\u2019ve been building and releasing consumer
-      products \u2014 leading a small team, and hacking away on weekends.</p>
-      <ul class="media shots">
-        <li>
-          <img class="fit" src="assets/thumbs/pinegap.svg" alt="PineGap.ai" loading="lazy">
-          <span><strong><a href="https://www.pinegap.ai/">PineGap.ai</a></strong> \u2014
-          a VC-backed startup disrupting equity research with LLMs. As founding
-          MLE/LLM engineer I finetune models, build RAG pipelines, custom evals and
-          LangChains, and ship them to production.</span>
-        </li>
-        <li>
-          <img src="assets/thumbs/saras.webp" alt="Saras" loading="lazy">
-          <span><strong><a href="https://t.me/saras_gpt_bot">Saras</a></strong> \u2014
-          a personal AI tutor as a Telegram bot. Won a $1,500 grant at the New
-          Venture Seed Contest and placed third at USC Trojan Tank.</span>
-        </li>
-        <li>
-          <img src="assets/thumbs/ballpark.webp" alt="Ballpark" loading="lazy">
-          <span><strong><a href="https://ball-park.netlify.app">Ballpark</a></strong>
-          \u2014 Wordle for numbers: a game that quietly improves your numeracy.
-          Built with Harsh.</span>
-        </li>
-        <li>
-          <img src="assets/thumbs/survey.webp" alt="Living Surveys" loading="lazy">
-          <span><strong><a href="https://github.com/EshaanAgg/Research-Literature-Manager">Living Surveys</a></strong>
-          \u2014 an open-source lit-review tool so you can stop having FOMO about
-          academia. GitHub Actions plus Semantic Scholar plus Netlify, hosting your
-          own survey paper with daily updated recommendations. Built with Eshaan;
-          here\u2019s the <a href="https://youtu.be/FUIq9-lJ9ag">talk at ISI</a>.</span>
-        </li>
-        <li>
-          <img src="assets/thumbs/designar.webp" alt="DesignAR at Imagine Cup" loading="lazy">
-          <span><strong>DesignAR</strong> \u2014 our augmented reality app: national
-          finalist and worldwide #6 at Microsoft Imagine Cup 2016, plus the Samsung
-          VR Appathon. The startup drew several VC offers.</span>
-        </li>
-        <li>
-          <img src="assets/thumbs/election.webp" alt="2020 election guide" loading="lazy">
-          <span><strong><a href="https://annenberginteractives.com/2020-2021/voting-information-by-state/">2020 Election guide</a></strong>
-          \u2014 a data story built with journalists from the USC Annenberg Media
-          Interactive Desk.</span>
-        </li>
-        <li>
-          <img src="assets/thumbs/covid.webp" alt="COVID-19 India visualisation" loading="lazy">
-          <span><strong>COVID-19 India</strong> \u2014 built between arranging oxygen
-          for dying relatives, recovering myself, and chasing a submission
-          deadline: an attempt to
-          <a href="https://avi-jit.github.io/covid-india/scatter#">visualize</a>
-          the scale of the Indian crisis so Americans could comprehend it.</span>
-        </li>
-      </ul>
-      <p>Smaller weekend builds, all live and none with a thumbnail yet:
-      <a href="https://saras-mandarin.netlify.app/">Saras Mandarin</a> (Chinese
-      learning), <a href="https://readparty-app.netlify.app/">Read Party</a>
-      (reading), and <a href="https://avi-trivia.netlify.app/">Avi Trivia</a>.</p>
-      <p>More source and experiments on
+      <p>Things I\u2019ve built and shipped: weekend hacks, open-source tools,
+      and products with a small team. Most of the recent ones are on
       <a href="https://github.com/avijit-thawani">GitHub</a>.</p>
+      <h3>Recent &amp; open source</h3>
+      <div class="cards">${RECENT.map(card).join('')}</div>
+      <h3>Products &amp; earlier work</h3>
+      <div class="cards">${EARLIER.map(card).join('')}</div>
       <p>I also like helping startups build proof-of-concepts and streamline
       their AI/NLP work, in mobility APIs or fintech. Reach out if you want to
       chat.</p>`,
@@ -155,6 +194,7 @@ export const SECTIONS = {
   labs: {
     object: 'conference lanyards and badges on a hook',
     zone: 'researcher',
+    chip: 'Work',
     title: 'Where I\u2019ve worked',
     tagline: 'Labs, internships & mentors',
     body: `
@@ -215,6 +255,7 @@ export const SECTIONS = {
   film: {
     object: 'film camera or clapperboard on a shelf',
     zone: 'storyteller',
+    chip: 'Film',
     title: 'Film',
     tagline: 'I love storytelling',
     body: `
@@ -239,6 +280,7 @@ export const SECTIONS = {
   writing: {
     object: 'typewriter, or notebook and fountain pen',
     zone: 'storyteller',
+    chip: 'Writing',
     title: 'Writing',
     tagline: 'Articles, stories, novels',
     body: `
@@ -265,6 +307,7 @@ export const SECTIONS = {
   stage: {
     object: 'a theatre mask',
     zone: 'storyteller',
+    chip: 'On stage',
     title: 'On stage',
     tagline: 'Improv, comedy, dance, rap, theatre',
     body: `
@@ -292,6 +335,7 @@ export const SECTIONS = {
   making: {
     object: 'a Rube Goldberg contraption, or a workbench with a small robot',
     zone: 'tinkerer',
+    chip: 'Making',
     title: 'Making things',
     tagline: 'Contraptions, robots, crafts',
     body: `
@@ -323,6 +367,7 @@ export const SECTIONS = {
   reading: {
     object: 'the bookshelf',
     zone: 'researcher',
+    chip: 'Reading',
     title: 'Reading & learning',
     tagline: 'Lifelong learner',
     body: `
@@ -343,6 +388,7 @@ export const SECTIONS = {
   travel: {
     object: 'a pinned world map on the wall',
     zone: 'storyteller',
+    chip: 'Travel',
     title: 'Travel',
     tagline: 'Four countries and counting',
     body: `
@@ -370,6 +416,7 @@ export const SECTIONS = {
   contact: {
     object: 'an envelope in a letter tray on the desk',
     zone: 'researcher',
+    chip: 'Contact',
     title: 'Contact',
     tagline: 'Say hi',
     body: `

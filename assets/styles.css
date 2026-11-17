@@ -36,15 +36,69 @@ body.show-depth::after {
 /* ── Hotspots ─────────────────────────────────────────────────────────────── */
 #hotspots { position: fixed; inset: 0; }
 
+/* A hotspot is visible at rest, not only under a pointer: a faint ring plus a
+   labelled chip. Hover-only highlighting made the page a guessing game on
+   desktop and gave a phone, which never hovers, nothing at all. */
 .hotspot {
   position: absolute;
   padding: 0;
   border: 0;
   border-radius: 10px;
   background: transparent;
+  box-shadow: inset 0 0 0 1px rgb(255 240 214 / 14%);
   cursor: pointer;
-  transition: background 220ms ease, box-shadow 220ms ease;
+  transition: background 220ms ease, box-shadow 220ms ease, opacity 220ms ease;
 }
+
+.chip {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px 5px 8px;
+  border: 1px solid rgb(255 240 214 / 26%);
+  border-radius: 999px;
+  background: rgb(20 17 14 / 78%);
+  color: var(--ink);
+  font: 600 11.5px/1 var(--sans);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  transition: background 200ms ease, border-color 200ms ease, opacity 220ms ease;
+}
+.chip::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: chip-pulse 2.6s ease-out infinite;
+}
+@keyframes chip-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(217 164 91 / 65%); }
+  70%, 100% { box-shadow: 0 0 0 7px rgb(217 164 91 / 0%); }
+}
+.hotspot:hover .chip,
+.hotspot:focus-visible .chip { background: rgb(20 17 14 / 94%); border-color: var(--accent); }
+
+/* Projects is the section most visitors come for and its object is the
+   smallest thing in every scene, so its chip is the one filled in. */
+.hotspot[data-section='build'] { box-shadow: inset 0 0 0 1.5px rgb(217 164 91 / 55%); }
+.hotspot[data-section='build'] .chip {
+  background: var(--accent); border-color: var(--accent); color: #17140f; font-size: 12.5px;
+}
+.hotspot[data-section='build'] .chip::before { background: #17140f; animation: none; }
+
+/* With the drawer open the camera has dollied in on one object; labels on the
+   others would only float over the close-up. */
+body.panel-open .chip, body.edit .chip { opacity: 0; }
+body.panel-open .hotspot { box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) { .chip::before { animation: none; } }
 
 .hotspot:hover,
 .hotspot:focus-visible {
@@ -71,25 +125,47 @@ body.show-depth::after {
 }
 #tooltip.show { opacity: 1; }
 
-#contact-link {
+/* ── Name plate and nav ───────────────────────────────────────────────────── */
+#brand {
   position: fixed;
   z-index: 8;
-  top: 18px;
-  right: 18px;
-  padding: 8px 13px;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: rgb(20 17 14 / 62%);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+#brand strong { font: 650 15px/1.1 var(--sans); letter-spacing: -0.005em; }
+#brand span { font: 400 11.5px/1.1 var(--sans); color: rgb(240 232 220 / 72%); }
+
+#nav {
+  position: fixed;
+  z-index: 8;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+}
+#nav button {
+  padding: 9px 14px;
   border: 1px solid rgb(255 240 214 / 28%);
   border-radius: 999px;
   background: rgb(20 17 14 / 72%);
   color: var(--ink);
-  font: 600 12px/1 var(--sans);
+  font: 600 12.5px/1 var(--sans);
   cursor: pointer;
   backdrop-filter: blur(10px);
 }
-#contact-link:hover,
-#contact-link:focus-visible {
-  background: rgb(20 17 14 / 90%);
-  outline: 1px solid var(--accent);
-}
+#nav button:hover,
+#nav button:focus-visible { background: rgb(20 17 14 / 92%); outline: 1px solid var(--accent); }
+#nav button.primary { background: var(--accent); border-color: var(--accent); color: #17140f; }
+#nav button.primary:hover,
+#nav button.primary:focus-visible { background: #e6b672; outline: 1px solid #fff3; }
 
 /* ── Inspiration credit ───────────────────────────────────────────────────── */
 /* Bottom-left is the only corner free on both pages: contact holds top-right,
@@ -138,9 +214,18 @@ body.show-depth::after {
   z-index: 20;
   overflow-y: auto;
   padding: 42px 38px 56px;
-  background: rgb(26 23 20 / 93%);
+  /* Light paper. The variables are re-declared here rather than on :root so the
+     chrome that sits on top of the artwork keeps its own dark pills. The accent
+     is a deeper amber than the one used over the picture: #d9a45b on cream is
+     about 2:1, which is not readable as link text. */
+  --ink: #211c16;
+  --muted: #7b7063;
+  --accent: #a2600f;
+  --line: rgb(40 30 15 / 12%);
+  background: rgb(250 246 239 / 97%);
+  color: var(--ink);
   backdrop-filter: blur(14px);
-  box-shadow: 0 0 60px rgb(0 0 0 / 45%);
+  box-shadow: 0 0 60px rgb(0 0 0 / 35%);
   transition: transform 460ms cubic-bezier(0.22, 0.9, 0.24, 1);
 }
 
@@ -162,17 +247,61 @@ body.show-depth::after {
   text-transform: uppercase;
 }
 #panel-title { margin: 0 0 20px; font-size: 30px; font-weight: 650; letter-spacing: -0.01em; }
-#panel-body { color: #ded6ca; font-size: 14.5px; line-height: 1.72; }
+#panel-body { color: #3d362d; font-size: 14.5px; line-height: 1.72; }
 #panel-body p { margin: 0 0 15px; }
+#panel-body h3 {
+  margin: 24px 0 12px; color: var(--muted);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+}
+
 #panel-body ul { margin: 0; padding-left: 18px; }
 #panel-body li { margin-bottom: 9px; }
 #panel-body strong { color: var(--ink); }
 #panel-body a {
   color: var(--accent);
-  text-decoration-color: rgb(217 164 91 / 40%);
+  text-decoration-color: rgb(162 96 15 / 40%);
   text-underline-offset: 2px;
 }
 #panel-body a:hover { text-decoration-color: var(--accent); }
+
+/* Project cards. The cover leads because a screenshot says what a project is
+   faster than its sentence does; the old layout gave it a 104px stamp beside a
+   column of text four words wide. */
+#panel.wide.left, #panel.wide.right { width: min(780px, 66vw); }
+#panel-body .cards {
+  display: grid; gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+}
+#panel-body .card {
+  display: flex; flex-direction: column; overflow: hidden;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(40 30 15 / 5%);
+  transition: border-color 180ms ease, background 180ms ease;
+}
+#panel-body .card:hover { border-color: rgb(162 96 15 / 50%); box-shadow: 0 4px 14px rgb(40 30 15 / 10%); }
+#panel-body .card .cover {
+  display: block; aspect-ratio: 16 / 9; background: #efe9df;
+  border-bottom: 1px solid var(--line);
+}
+#panel-body .card .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+#panel-body .card .cover img.fit { object-fit: contain; padding: 18px; }
+/* For art drawn in light ink, which vanishes on the paper cover. */
+#panel-body .card .cover.dark { background: #1f1b17; }
+#panel-body .card .cover .blank {
+  display: grid; place-items: center; height: 100%; padding: 16px; text-align: center;
+  color: var(--accent); font-size: 21px; font-weight: 650; letter-spacing: -0.01em;
+  background: radial-gradient(120% 120% at 20% 10%, rgb(217 164 91 / 30%), transparent 60%);
+}
+#panel-body .card-body { display: flex; flex-direction: column; flex: 1; padding: 13px 15px 15px; }
+#panel-body .card h4 { margin: 0 0 5px; color: var(--ink); font-size: 15.5px; font-weight: 650; }
+#panel-body .card p { margin: 0 0 12px; font-size: 13.5px; line-height: 1.55; }
+#panel-body .card .links { display: flex; flex-wrap: wrap; gap: 7px; margin-top: auto; }
+#panel-body .card .links a {
+  padding: 5px 11px; border: 1px solid rgb(162 96 15 / 45%); border-radius: 999px;
+  font-size: 12px; font-weight: 600; line-height: 1; text-decoration: none;
+}
+#panel-body .card .links a:hover { background: var(--accent); color: #fff; }
 
 /* Thumbnailed lists. Two variants because the two kinds of image want opposite
    treatment: an institution logo must never be cropped, so it is `contain` on
@@ -202,7 +331,7 @@ body.show-depth::after {
      width one and leaves the height one standing, so the image renders at
      (panel width x 297px) - stretched taller the narrower the drawer gets. */
   width: 100%; height: auto; border-radius: 7px; display: block;
-  border: 1px solid rgb(255 255 255 / 10%);
+  border: 1px solid var(--line);
 }
 #panel-body figure.still figcaption {
   margin-top: 7px; font-size: 12.5px; color: var(--muted);
@@ -223,13 +352,13 @@ body.show-depth::after {
   height: 30px;
   border: 0;
   border-radius: 50%;
-  background: rgb(255 255 255 / 8%);
+  background: rgb(40 30 15 / 8%);
   color: var(--ink);
   font-size: 15px;
   line-height: 1;
   cursor: pointer;
 }
-#panel-close:hover { background: rgb(255 255 255 / 16%); }
+#panel-close:hover { background: rgb(40 30 15 / 16%); }
 
 /* ── Pan arrows ───────────────────────────────────────────────────────────── */
 .pan-arrow {
@@ -337,4 +466,11 @@ body.edit .hotspot::after {
   /* A centred scene switcher is nearly full width on a phone, so the credit
      stops sharing a row with it and sits above instead. */
   #credit { bottom: 60px; }
+  /* Name only: the tagline plus two buttons does not fit one row at 360px. */
+  #brand { top: 12px; left: 12px; padding: 8px 11px; }
+  #brand span { display: none; }
+  #panel-body .cards { grid-template-columns: 1fr; }
+  #brand strong { font-size: 13.5px; }
+  #nav { top: 12px; right: 12px; gap: 6px; }
+  #nav button { padding: 8px 11px; font-size: 12px; }
 }

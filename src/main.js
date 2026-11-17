@@ -3,7 +3,7 @@ import { addParticles } from './particles.js';
 import { mountPan } from './pan.js';
 import { SECTIONS } from './content.js';
 import { sceneById } from './scenes.js';
-import { createUI, showFallback } from './ui.js';
+import { createUI, showFallback, mountChrome } from './ui.js';
 import { mountEditor } from './editor.js';
 
 // Tells the watchdog in index.html that the module graph resolved, so it must
@@ -34,10 +34,6 @@ if (!reduceMotion) addParticles(px, scene.particles);
 
 const ui = createUI({ onClose: () => px.zoomOut() });
 const layer = document.getElementById('hotspots');
-document.getElementById('contact-link').addEventListener('click', () => {
-  px.zoomOut();
-  ui.open('contact', isPhone() ? 'bottom' : 'right');
-});
 
 const hotspots = scene.hotspots.map((h) => ({
   ...h,
@@ -71,6 +67,8 @@ const spots = hotspots.map((h) => {
   layer.appendChild(el);
   return { h, el };
 });
+
+mountChrome({ ui, px, spots, isPhone });
 
 function layoutHotspots() {
   const r = px.coverRect();
