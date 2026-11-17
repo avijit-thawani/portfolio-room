@@ -27,6 +27,9 @@ export const HERO = {
 const GH = 'https://github.com/avijit-thawani/';
 
 const RECENT = [
+  { name: 'Indian swing seats', img: 'cover-india-swing-map.webp',
+    text: 'An interactive map of India\u2019s 543 Lok Sabha seats: the NDA\u2019s lead in 2019 and 2024, and how far each seat moved between them.',
+    links: [['Live', 'https://india-swing-map.netlify.app/'], ['Code', GH + 'india-swing-map']] },
   { name: 'Pahunchi', img: 'cover-pahunchi.webp',
     text: 'A pretend phone call that talks back: an AI dad, mom or friend in an Indian voice, for walking home or cab rides at night.',
     links: [['Live', 'https://phoney-call.netlify.app'], ['Code', GH + 'pahunchi']] },
