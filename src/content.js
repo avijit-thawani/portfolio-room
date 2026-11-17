@@ -57,7 +57,7 @@ const RECENT = [
   { name: 'TESS planet candidates', img: 'cover-tess.webp',
     text: 'Two new planet-candidate signals from a 1,098-star search at 60 to 100 pc, preregistered on Zenodo. With Niyati.',
     links: [['Code', GH + 'tess-niyati-avijit']] },
-  { name: 'Chess trainer',
+  { name: 'Chess trainer', img: 'cover-chess.webp',
     text: 'An opening trainer in the browser, with Stockfish running locally as WebAssembly.',
     links: [['Code', GH + 'chess-trainer']] },
   { name: 'Avi Trivia', img: 'cover-trivia.webp',
