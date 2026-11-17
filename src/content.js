@@ -200,6 +200,16 @@ export const SECTIONS = {
       <p>I\u2019ve been lucky in my mentors. Roughly newest first:</p>
       <ul class="media logos">
         <li>
+          <img src="assets/thumbs/eliseai.svg" alt="EliseAI" loading="lazy">
+          <span><strong><a href="https://www.eliseai.com">EliseAI</a></strong> \u2014
+          Mario Martone.</span>
+        </li>
+        <li>
+          <img src="assets/thumbs/otter.webp" alt="Otter.ai" loading="lazy">
+          <span><strong><a href="https://otter.ai">Otter.ai</a></strong> \u2014
+          Kean Chin, Dmitriy Genzel.</span>
+        </li>
+        <li>
           <img src="assets/thumbs/usc.webp" alt="USC" loading="lazy">
           <span><strong>USC</strong> \u2014 thesis committee:
           <a href="http://jaypujara.org">Jay Pujara</a>,

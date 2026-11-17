@@ -23,6 +23,11 @@ not worth hunting for again: Saras Mandarin, Read Party and Avi Trivia all
 postdate that site; the WW2-jet documentary and the comedy sketch only ever
 existed as Facebook video; and the robotics win, HandyPresents and the sketching
 were never illustrated at all.
+
+Two labs logos postdate that site too and are not fetched by this script, so a
+re-run leaves them alone. Both came from the companies' own sites: `otter.webp`
+is otter.ai's apple-touch-icon, flattened onto white and trimmed to the mark;
+`eliseai.svg` is the wordmark from eliseai.com's nav, copied verbatim.
 """
 
 import argparse
