@@ -26,49 +26,45 @@ export const HERO = {
 // cover points.
 const GH = 'https://github.com/avijit-thawani/';
 
-const RECENT = [
-  { name: 'Indian swing seats', img: 'cover-india-swing-map.webp',
-    text: 'An interactive map of India\u2019s 543 Lok Sabha seats: the NDA\u2019s lead in 2019 and 2024, and how far each seat moved between them.',
-    links: [['Live', 'https://india-swing-map.netlify.app/'], ['Code', GH + 'india-swing-map']] },
-  { name: 'Pahunchi', img: 'cover-pahunchi.webp',
-    text: 'A pretend phone call that talks back: an AI dad, mom or friend in an Indian voice, for walking home or cab rides at night.',
-    links: [['Live', 'https://phoney-call.netlify.app'], ['Code', GH + 'pahunchi']] },
+// One list, in display order: the newer ML and agent work first, then the
+// apps and games, then the older products.
+const PROJECTS = [
   { name: 'Sense', img: 'cover-sense.webp',
     text: 'A thumb-sized camera that describes the world to a blind person through earphones. Tap for what is in front of you, or hold and ask.',
     links: [['Code', GH + 'sense']] },
-  { name: 'Living Survey', img: 'cover-living-survey.webp',
-    text: 'A literature survey that lives in your README and updates itself. No hosting, no API keys.',
-    links: [['Code', GH + 'living-survey'], ['Example', GH + 'tokenization-in-nlp']] },
-  { name: 'Sikander', img: 'cover-sikander.webp',
-    text: 'A turn-based battle game set in 326 BC, played in the browser. Plain HTML, CSS and JavaScript with no build step.',
-    links: [['Code', GH + 'sikander']] },
-  { name: 'Read Party', img: 'cover-read-party.webp',
-    text: 'Read the same book together, in sync, from different devices. A fork of Koodo Reader.',
-    links: [['Live', 'https://readparty-app.netlify.app/'], ['Code', GH + 'read-party']] },
-  { name: 'Saras Mandarin', img: 'cover-saras-mandarin.webp',
-    text: 'Learn Mandarin with HSK1, LLMs and spaced repetition.',
-    links: [['Live', 'https://saras-mandarin.netlify.app/'], ['Code', GH + 'mandarin']] },
-  { name: 'Sketch to image', img: 'cover-ipad.webp',
-    text: 'Draw the composition on an iPad with an Apple Pencil, pick a style, and the model renders the part a prompt cannot express.',
-    links: [['Code', GH + 'ipad']] },
   { name: 'Typst agent harness', img: 'cover-typst.webp',
     text: 'Agentic LaTeX to Typst conversion, with compile and visual-fidelity feedback loops.',
     links: [['Code', GH + 'typst-agent-harness']] },
+  { name: 'Living Survey', img: 'cover-living-survey.webp',
+    text: 'A literature survey that lives in your README and updates itself. No hosting, no API keys.',
+    links: [['Code', GH + 'living-survey'], ['Example', GH + 'tokenization-in-nlp']] },
+  { name: 'Pahunchi', img: 'cover-pahunchi.webp',
+    text: 'A pretend phone call that talks back: an AI dad, mom or friend in an Indian voice, for walking home or cab rides at night.',
+    links: [['Live', 'https://phoney-call.netlify.app'], ['Code', GH + 'pahunchi']] },
+  { name: 'Sketch to image', img: 'cover-ipad.webp',
+    text: 'Draw the composition on an iPad with an Apple Pencil, pick a style, and the model renders the part a prompt cannot express.',
+    links: [['Code', GH + 'ipad']] },
   { name: 'TESS planet candidates', img: 'cover-tess.webp',
     text: 'Two new planet-candidate signals from a 1,098-star search at 60 to 100 pc, preregistered on Zenodo.',
     links: [['Code', GH + 'tess-niyati-avijit']] },
+  { name: 'Indian swing seats', img: 'cover-india-swing-map.webp',
+    text: 'An interactive map of India\u2019s 543 Lok Sabha seats: the NDA\u2019s lead in 2019 and 2024, and how far each seat moved between them.',
+    links: [['Live', 'https://india-swing-map.netlify.app/'], ['Code', GH + 'india-swing-map']] },
+  { name: 'Saras Mandarin', img: 'cover-saras-mandarin.webp',
+    text: 'Learn Mandarin with HSK1, LLMs and spaced repetition.',
+    links: [['Live', 'https://saras-mandarin.netlify.app/'], ['Code', GH + 'mandarin']] },
+  { name: 'Read Party', img: 'cover-read-party.webp',
+    text: 'Read the same book together, in sync, from different devices. A fork of Koodo Reader.',
+    links: [['Live', 'https://readparty-app.netlify.app/'], ['Code', GH + 'read-party']] },
+  { name: 'Sikander', img: 'cover-sikander.webp',
+    text: 'A turn-based battle game set in 326 BC, played in the browser. Plain HTML, CSS and JavaScript with no build step.',
+    links: [['Code', GH + 'sikander']] },
   { name: 'Chess trainer', img: 'cover-chess.webp',
     text: 'An opening trainer in the browser, with Stockfish running locally as WebAssembly.',
     links: [['Code', GH + 'chess-trainer']] },
   { name: 'Avi Trivia', img: 'cover-trivia.webp',
     text: 'A trivia card game: drag each card to where it fits on the timeline, by price, height, population and more.',
     links: [['Live', 'https://avi-trivia.netlify.app/'], ['Code', GH + 'trivia']] },
-  { name: 'This room', img: 'cover-room.webp',
-    text: 'The site you\u2019re on, built from one flat illustration plus a depth map, displaced in a shader.',
-    links: [['Code', GH + 'portfolio-room']] },
-];
-
-const EARLIER = [
   { name: 'PineGap.ai', img: 'pinegap.svg', fit: 'contain', dark: true,
     text: 'A VC-backed startup disrupting equity research with LLMs. As founding MLE/LLM engineer I finetune models, build RAG pipelines, custom evals and LangChains, and ship them to production.',
     links: [['Site', 'https://www.pinegap.ai/']] },
@@ -90,6 +86,9 @@ const EARLIER = [
   { name: 'COVID-19 India', img: 'covid.webp',
     text: 'Built between arranging oxygen for dying relatives, recovering myself, and chasing a submission deadline: an attempt to visualize the scale of the Indian crisis so Americans could comprehend it.',
     links: [['View', 'https://avi-jit.github.io/covid-india/scatter#']] },
+  { name: 'This room', img: 'cover-room.webp',
+    text: 'The site you\u2019re on, built from one flat illustration plus a depth map, displaced in a shader.',
+    links: [['Code', GH + 'portfolio-room']] },
 ];
 
 function card(p) {
@@ -185,10 +184,7 @@ export const SECTIONS = {
       <p>Things I\u2019ve built and shipped: weekend hacks, open-source tools,
       and products with a small team. Most of the recent ones are on
       <a href="https://github.com/avijit-thawani">GitHub</a>.</p>
-      <h3>Recent &amp; open source</h3>
-      <div class="cards">${RECENT.map(card).join('')}</div>
-      <h3>Products &amp; earlier work</h3>
-      <div class="cards">${EARLIER.map(card).join('')}</div>
+      <div class="cards">${PROJECTS.map(card).join('')}</div>
       <p>I also like helping startups build proof-of-concepts and streamline
       their AI/NLP work, in mobility APIs or fintech. Reach out if you want to
       chat.</p>`,
