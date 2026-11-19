@@ -267,13 +267,30 @@ export const SECTIONS = {
     chip: 'Film',
     title: 'Film',
     tagline: 'I love storytelling',
+    // Both films play in place and neither starts on its own. The teaser is
+    // self-hosted on GitHub Pages (avijit-thawani/films) with preload="none",
+    // so nothing is fetched until play is pressed. Stopping by Woods is a
+    // plain link to YouTube that ui.js swaps for the embedded player on click
+    // (`data-yt`), so YouTube loads nothing until then either - which matters
+    // because the no-WebGL fallback renders every section at once.
     body: `
       <figure class="still">
-        <a href="https://www.youtube.com/watch?v=Uy_3XKqsJZk">
+        <video controls playsinline preload="none" width="1920" height="1080"
+               poster="https://avijit-thawani.github.io/films/six-months-later/poster.jpg"
+               src="https://avijit-thawani.github.io/films/six-months-later/teaser.mp4"
+               aria-label="Teaser for Before Sunrise fan trivia"></video>
+        <figcaption><a href="https://github.com/avijit-thawani/films">Teaser for
+        <em>Before Sunrise</em> fan trivia</a> \u2014 made with AI image and
+        video models</figcaption>
+      </figure>
+      <figure class="still">
+        <a class="yt" data-yt="Uy_3XKqsJZk" aria-label="Play Stopping by Woods"
+           href="https://www.youtube.com/watch?v=Uy_3XKqsJZk">
           <img src="assets/thumbs/film.webp" width="630" height="297" loading="lazy"
                alt="Title card for the short film Stopping by Woods">
         </a>
-        <figcaption>Stopping by Woods \u2014 watch on YouTube</figcaption>
+        <figcaption>Stopping by Woods \u2014 play it here, or
+        <a href="https://www.youtube.com/watch?v=Uy_3XKqsJZk">watch on YouTube</a></figcaption>
       </figure>
       <p>My most popular <a href="https://www.youtube.com/watch?v=Uy_3XKqsJZk">short
       film</a> has over <strong>65,000 views</strong> on YouTube. It took two

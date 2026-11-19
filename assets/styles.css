@@ -333,6 +333,42 @@ body.panel-open .hotspot { box-shadow: none; }
   width: 100%; height: auto; border-radius: 7px; display: block;
   border: 1px solid var(--line);
 }
+/* Things that play: the self-hosted video, the link that becomes a YouTube
+   player (`.yt`), and that player. All three share one black 16:9 frame, so
+   swapping the link for the player moves nothing on the page. `height: auto`
+   matters for the same reason as above, and the aspect-ratio holds the box
+   before the poster or any metadata has arrived (preload is "none"). The
+   fallback page is listed too: unstyled, the width="1920" attribute would run
+   the video off the side of a 680px column. */
+:is(#panel-body, .fallback) figure.still :is(video, iframe, .yt) {
+  width: 100%; height: auto; aspect-ratio: 16 / 9; border-radius: 7px; display: block;
+  border: 1px solid var(--line); background: #000;
+}
+:is(#panel-body, .fallback) figure.still .yt { position: relative; overflow: hidden; }
+/* The title card is wider than 16:9, so it is letterboxed rather than cropped:
+   cropping would cut into the lettering at its left edge. */
+:is(#panel-body, .fallback) figure.still .yt img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: contain; border: 0; border-radius: 0;
+}
+/* Play button: a disc and a triangle, so the still reads as something to press. */
+figure.still .yt::before,
+figure.still .yt::after {
+  content: ""; position: absolute; top: 50%; left: 50%; pointer-events: none;
+}
+figure.still .yt::before {
+  width: 58px; height: 58px; margin: -29px 0 0 -29px; border-radius: 50%;
+  background: rgb(15 12 9 / 68%); box-shadow: 0 0 0 1.5px rgb(255 255 255 / 75%);
+  transition: background 160ms ease, transform 160ms ease;
+}
+figure.still .yt::after {
+  margin: -10px 0 0 -6px;
+  border-style: solid; border-width: 10px 0 10px 17px;
+  border-color: transparent transparent transparent #fff;
+}
+figure.still .yt:hover::before,
+figure.still .yt:focus-visible::before { background: #a2600f; transform: scale(1.06); }
+.fallback figure.still { margin: 0 0 15px; }
 #panel-body figure.still figcaption {
   margin-top: 7px; font-size: 12.5px; color: var(--muted);
 }

@@ -3,6 +3,28 @@ import { SECTIONS, HERO } from './content.js';
 const $ = (id) => document.getElementById(id);
 const SIDES = ['left', 'right', 'top', 'bottom'];
 
+// A link marked `data-yt="<video id>"` plays in place: the click swaps it for
+// the YouTube player. Until then it is an ordinary link showing a still, so the
+// page loads nothing from YouTube, and it still works as a link if this never
+// runs. Delegated from the document so it covers the drawer and the no-WebGL
+// fallback alike.
+const YT_ORIGIN = 'https://www.youtube-nocookie.com';
+document.addEventListener('click', (e) => {
+  const link = e.target.closest?.('a[data-yt]');
+  // A modified click means "open this in a new tab"; leave it to the browser.
+  if (!link || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+  e.preventDefault();
+  const frame = document.createElement('iframe');
+  frame.src = `${YT_ORIGIN}/embed/${encodeURIComponent(link.dataset.yt)}`
+    + '?autoplay=1&playsinline=1&rel=0&enablejsapi=1';
+  frame.title = link.getAttribute('aria-label') || 'YouTube video';
+  frame.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen';
+  frame.allowFullscreen = true;
+  // YouTube refuses to play (error 153) when the embed sends no referrer.
+  frame.referrerPolicy = 'strict-origin-when-cross-origin';
+  link.replaceWith(frame);
+});
+
 export function createUI({ onClose } = {}) {
   const panel = $('panel');
   const backdrop = $('backdrop');
@@ -49,6 +71,16 @@ export function createUI({ onClose } = {}) {
   function close() {
     if (!openKey) return;
     openKey = null;
+    // The body stays in the DOM while the drawer is off-screen, so anything
+    // left playing keeps its sound going behind the room. A <video> can simply
+    // be paused. A YouTube player is asked to pause, then removed once the
+    // drawer has finished sliding out (460ms) in case it was not listening yet.
+    for (const v of bodyEl.querySelectorAll('video')) v.pause();
+    const frames = [...bodyEl.querySelectorAll('iframe')];
+    for (const f of frames) {
+      f.contentWindow?.postMessage('{"event":"command","func":"pauseVideo","args":""}', YT_ORIGIN);
+    }
+    if (frames.length) setTimeout(() => frames.forEach((f) => f.remove()), 500);
     panel.classList.remove('open');
     panel.setAttribute('aria-hidden', 'true');
     backdrop.classList.remove('show');
