@@ -3,7 +3,7 @@
 An interactive portfolio that is one illustration you can lean into, with the
 content hidden inside the objects in the picture. Click the typewriter to read
 the writing section; click the chalkboard for research. Live at
-**https://avi-thawani.netlify.app**.
+**https://thawani.co**.
 
 There is no 3D scene behind it. It is a single flat image plus a grayscale
 depth map, displaced and shaded in a fragment shader, which is why the whole
